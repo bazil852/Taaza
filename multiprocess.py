@@ -114,8 +114,7 @@ def scrape_product(item):
     count=0
     pageCheck=True
     while (True):
-        if (count>1000):
-            break
+
         try:
             notLoaded=False
             try:
@@ -156,6 +155,8 @@ def scrape_product(item):
             print(len(rows))
             print("Sr\tCountry\tRegion\tVariety\tPrice")
             for row in rows:
+                if (count>3):
+                    break
                 cells = row.find_elements(By.TAG_NAME,"td")
                 # for cell in cells:
                 #     print(cell.text,end='  ')
@@ -163,21 +164,22 @@ def scrape_product(item):
                     print(count,'\t')
                     count+=1
                     print(item,'\t',cells[2].text,'\t',cells[3].text,'\t',cells[4].text,'\t',cells[6].text)
-                    data = {
-                        "CountryName":cells[2].text,
-                        "CityName":cells[3].text,
-                        "ProductName":item,
-                        "variety":cells[4].text,
-                        "Currency/Unit":cells[5].text
-                    }
-
                     for i in range(6, len(headings)):
-                        data[headings[i].text] = cells[i].text
-                    
-                    df.append(data)
+                        data = {
+                            "CountryName": cells[2].text,
+                            "CityName": cells[3].text,
+                            "ProductName": item,
+                            "variety": cells[4].text,
+                            "Currency/Unit": cells[5].text
+                        }
+                        data['Price Date']=headings[i].text
+                        data['Price'] = cells[i].text
+                        df.append(data)
                 
                 # print ()
             # sc-ftTHYK cOLBMg toned secondary s 
+            if (count>3):
+                break
             actions.send_keys(Keys.PAGE_DOWN).perform()
             # time.sleep(300)
             next=driver.find_elements(By.XPATH, "//*[@class='sc-ftTHYK bFoDHH toned secondary s ']")
